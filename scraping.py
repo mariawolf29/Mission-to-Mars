@@ -80,26 +80,33 @@ def mars_facts(browser):
     return df.to_html()
 
 def hemispheres(browser):
-    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
-    browser.visit(url)
-
     # Obtain high-resolution images for each of Mars's hemispheres.
-    high_hemisphere=browser.find_by_css('.thumb')
-    high_hemisphere.click()
+    url = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
+    
+    hemispheres = []
+    for i in range(4):
+        browser.visit(url) 
+        
+        thumbs = browser.find_by_css('.thumb')
+    
+        # click on i-th the thumbnail
+        thumbs[i].click()
 
-    # Parse the resulting html with soup
-    html = browser.html
-    img_soup = soup(html, 'html.parser')
+        # Parse the resulting html with soup
+        html = browser.html
+        img_soup = soup(html, 'html.parser')
 
-    # Find the image url and name:
-    img_url = img_soup.select_one('li a').get("href")
-    img_name = img_soup.select_one("h2.title").get_text()
+        # Find the image url and name:
+        img_url = img_soup.select_one('li a').get("href")
+        img_name = img_soup.select_one("h2.title").get_text()
 
-    hemi_dict={}
-    hemi_dict['title']=img_name
-    hemi_dict['img_url']=img_url
+        hemi_dict={}
+        hemi_dict['title']=img_name
+        hemi_dict['img_url']=img_url
 
-    return img_url, img_name
+        hemispheres.append(hemi_dict)
+    
+    return hemispheres
 
    
 def scrape_all():
@@ -108,7 +115,8 @@ def scrape_all():
     title, paragraph = mars_news(browser)
     img_url=featured_image(browser)
     df=mars_facts(browser) 
-    hemi_img, hemi_name=hemispheres(browser)
+    hemis = hemispheres(browser)
+
     browser.quit()
 
     mars = {
@@ -116,9 +124,7 @@ def scrape_all():
         "news_paragraph": paragraph,
         "featured_imag": img_url,
         "facts":df,
-        "cerberus_imag":hemi_img,
-        "cerberus_name":hemi_name
-      
+        "hemispheres":hemis,
     }
 
     return mars

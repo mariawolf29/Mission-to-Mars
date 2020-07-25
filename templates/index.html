@@ -46,17 +46,19 @@
             <h2>Mars Facts</h2>
             {{ mars.facts | safe }}
           </div>
-        </div>\>
+        </div>
         <!--Mars Hemispheres-->
         <div class="row" id="mars-cerberus">
+          {% for hemi in mars.hemispheres %}
           <div class="col-md-12">
-            <h2>{{mars.cerberus_name}}</h2>
+            <h2>{{hemi.title}}</h2>
             <img
-              src="{{mars.cerberus_imag }}"
+              src="{{hemi.img_url}}"
               class="img-responsive"
-              alt="{{mars.cerberus_name}}"
+              alt="{{hemi.title}}"
             />
           </div>
+          {% endfor %}
       </div>
     </div>
   </body>
